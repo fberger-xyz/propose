@@ -1,10 +1,10 @@
 import { AppThemes, IconIds } from '@/enums'
 
 export const APP_METADATA = {
-    SITE_AUTHOR: 'fberger',
-    SITE_NAME: 'fberger.xyz | Connect',
-    SITE_DESCRIPTION: 'RabbyKit resolves conflicts between multiple wallets',
-    SITE_URL: 'https://connect.fberger.xyz',
+    SITE_AUTHOR: 'fberger.xyz',
+    SITE_NAME: 'Propose',
+    SITE_DESCRIPTION: 'TBA',
+    SITE_URL: 'https://propose.fberger.xyz',
     SOCIALS: {
         X: 'fberger_xyz',
         TELEGRAM: 'fberger_xyz',

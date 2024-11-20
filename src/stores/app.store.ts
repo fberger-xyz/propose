@@ -14,7 +14,7 @@ export const useAppStore = create<{
     actions: Record<string, () => void>
     computeds: Record<string, () => void>
 }>(() => ({
-    name: APP_METADATA.SITE_NAME,
+    name: `${APP_METADATA.SITE_AUTHOR} | ${APP_METADATA.SITE_NAME}`,
     version: '0.0.0',
     env: String(process.env.NEXT_PUBLIC_APP_ENV),
     debug: String(process.env.NEXT_PUBLIC_APP_DEBUG) === 'true',
@@ -22,7 +22,7 @@ export const useAppStore = create<{
     initialized: false,
     links: [
         {
-            name: 'Home',
+            name: APP_METADATA.SITE_NAME,
             path: AppPagePaths.HOME,
             enabled: true,
             sublinks: [],
