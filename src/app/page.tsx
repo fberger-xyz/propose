@@ -104,9 +104,12 @@ export default function Page() {
                                                 <p className="text-sm text-inactive">{SUPPORTED_CHAINS[chain.chainId].name}</p>
                                                 <div className="grow border-b border-dashed border-light-hover" />
                                             </div>
-                                            <div className="flex flex-wrap gap-2">
-                                                {chain.data.results.map((safe) => (
-                                                    <AddressWithActions key={safe.safe} chain={chain.chainId} address={safe.safe} />
+                                            <div className="flex flex-wrap gap-3">
+                                                {chain.data.results.map((safe, safeIndex) => (
+                                                    <div key={safe.safe} className="flex items-center gap-1">
+                                                        <p className="text-xs text-light-hover">{safeIndex + 1}</p>
+                                                        <AddressWithActions key={safe.safe} chain={chain.chainId} address={safe.safe} />
+                                                    </div>
                                                 ))}
                                             </div>
                                         </div>
