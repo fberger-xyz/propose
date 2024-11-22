@@ -22,17 +22,17 @@ export const useAppStore = create<{
     initialized: false,
     links: [
         {
-            name: APP_METADATA.SITE_NAME,
+            name: 'Home',
             path: AppPagePaths.HOME,
-            enabled: true,
+            auth: false,
             sublinks: [],
         },
-        {
-            name: 'Protected',
-            path: AppPagePaths.PROTECTED,
-            enabled: true,
-            sublinks: [],
-        },
+        // {
+        //     name: 'Protected',
+        //     path: AppPagePaths.PROTECTED,
+        //     auth: true,
+        //     sublinks: [],
+        // },
     ],
     actions: {},
     computeds: {},

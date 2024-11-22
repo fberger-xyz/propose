@@ -6,11 +6,14 @@ import { createModal } from '@rabby-wallet/rabbykit'
 import { useTheme } from 'next-themes'
 import { AppThemes, IconIds } from '@/enums'
 import { useKeyboardShortcut } from '@/hooks/useKeyboardShortcutArgs'
-import { shortenAddress } from '@/utils'
+import { copyToClipboard, shortenAddress } from '@/utils'
 import toast from 'react-hot-toast'
 import { toastStyle } from '@/config/toasts.config'
 import IconWrapper from '../common/IconWrapper'
 import { signOut } from 'next-auth/react'
+import LinkWrapper from '../common/LinkWrapper'
+import SvgMapper from '../common/SvgMapper'
+import { Tooltip } from '@nextui-org/tooltip' // https://nextui.org/docs/components/tooltip
 
 export function ConnectOrDisconnect() {
     const account = useAccount()
@@ -34,8 +37,6 @@ export function ConnectOrDisconnect() {
     }, [config])
     useEffect(() => {
         if (account.status === 'connected') toast.success(`Connected wallet ${shortenAddress(account.address)}`, { style: toastStyle })
-        // else if (account.status === 'connecting') toast('Connecting...', { style: toastStyle })
-        // else if (account.status === 'disconnected') toast('Disconnected', { style: toastStyle })
     }, [account.status])
     useEffect(() => {
         if (error) toast.error(`Wallet error: ${(error as BaseError).shortMessage}`, { style: toastStyle })
@@ -46,30 +47,54 @@ export function ConnectOrDisconnect() {
     })
 
     return account.isConnecting ? (
-        <button className="z-50 flex items-center gap-2.5 rounded-md bg-very-light-hover px-2.5 py-0.5 hover:bg-light-hover">
+        <button className="z-50 flex items-center gap-3 rounded-sm bg-very-light-hover px-2.5 py-1 hover:bg-light-hover">
             <div className="size-2 rounded-full bg-orange-400" />
             <p className="text-inactive">Connecting</p>
             <IconWrapper icon={IconIds.LOADING} className="size-4 text-orange-400" />
         </button>
     ) : account.isConnected ? (
-        <button
-            className="group z-50 flex items-center gap-2.5 rounded-md bg-light-hover px-2.5 py-0.5 hover:bg-light-hover"
-            onClick={async () => {
-                try {
-                    await disconnect()
-                    await signOut()
-                } catch (error) {
-                    window.alert({ error })
-                }
-            }}
-        >
+        <div className="z-50 flex items-center gap-3 rounded-sm bg-light-hover px-2.5 py-1 hover:bg-light-hover">
             <div className="size-2 rounded-full bg-green-500" />
-            <p className="">{shortenAddress(String(account.address))}</p>
-            <IconWrapper icon={IconIds.DISCONNECT} className="size-5 text-inactive group-hover:text-red-600" />
-        </button>
+            <p>{shortenAddress(String(account.address))}</p>
+            <div className="flex items-center gap-2">
+                <Tooltip content={<p className="text-default">Copy wallet address</p>}>
+                    <button
+                        onClick={() => {
+                            copyToClipboard(String(account.address))
+                            toast.success(`Address ${shortenAddress(String(account.address))} copied`, { style: toastStyle })
+                        }}
+                        className="hidden text-inactive hover:text-default sm:flex"
+                    >
+                        <IconWrapper icon={IconIds.CARBON_COPY} className="size-4" />
+                    </button>
+                </Tooltip>
+                <Tooltip content={<p className="text-default">Watch in Debank</p>}>
+                    <div className="hidden items-center sm:flex">
+                        <LinkWrapper href={`https://debank.com/profile/${account.address}`} target="_blank" className="opacity-50 hover:opacity-100">
+                            <SvgMapper icon={IconIds.DEBANK} className="size-4 grayscale hover:grayscale-0" />
+                        </LinkWrapper>
+                    </div>
+                </Tooltip>
+                <Tooltip content={<p className="text-default">Disconnect wallet</p>}>
+                    <button
+                        onClick={async () => {
+                            try {
+                                await disconnect()
+                                await signOut()
+                            } catch (error) {
+                                window.alert({ error })
+                            }
+                        }}
+                        className="text-inactive hover:text-default"
+                    >
+                        <IconWrapper icon={IconIds.DISCONNECT} className="size-5" />
+                    </button>
+                </Tooltip>
+            </div>
+        </div>
     ) : (
         <button
-            className="z-50 flex items-center gap-2.5 rounded-md bg-very-light-hover px-2.5 py-0.5 text-inactive hover:bg-light-hover hover:text-default"
+            className="z-50 flex items-center gap-3 rounded-sm bg-very-light-hover px-2.5 py-1 text-inactive hover:bg-light-hover hover:text-default"
             onClick={() => rabbyKitRef.current?.open()}
         >
             <div className="size-2 rounded-full bg-inactive" />

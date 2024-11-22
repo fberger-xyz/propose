@@ -41,6 +41,6 @@ export enum IconIds {
     // wallet
     LOADING = 'line-md:loading-twotone-loop',
     WALLET = 'carbon:wallet',
-    DISCONNECT = 'fluent:plug-disconnected-20-filled',
+    DISCONNECT = 'ant-design:disconnect-outlined',
     DEBANK = 'DEBANK',
 }

@@ -40,7 +40,7 @@ export default function SiweWrapper() {
                 message: JSON.stringify(siweMessage),
                 redirect: false,
                 signature,
-                callbackUrl: `${APP_METADATA.SITE_URL}${AppPagePaths.PROTECTED}`,
+                callbackUrl: `${APP_METADATA.SITE_URL}${AppPagePaths.HOME}`, // todo change to protected route
             })
         } catch (error) {
             window.alert(error)
