@@ -11,3 +11,6 @@ export const copyToClipboard = (value: string) => {
         console.log(error)
     }
 }
+
+export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+export const uniquePredicate = (value: unknown, index: number, array: unknown[]) => array.indexOf(value) === index

@@ -10,8 +10,10 @@ import SvgMapper from '../common/SvgMapper'
 import { Tooltip } from '@nextui-org/tooltip' // https://nextui.org/docs/components/tooltip
 import { IconIds, SupportedChains } from '@/enums'
 import { SUPPORTED_CHAINS } from '@/config/chains.config'
+import { useState } from 'react'
 
 export function AddressWithActions(props: { chain?: SupportedChains; address: string }) {
+    const [copyText, setCopyText] = useState('Copy wallet address')
     return (
         <div className="flex items-center gap-2.5 rounded-sm bg-light-hover px-2.5 py-1 text-base hover:bg-light-hover">
             {props.chain && (
@@ -25,13 +27,16 @@ export function AddressWithActions(props: { chain?: SupportedChains; address: st
             <p>{shortenAddress(String(props.address))}</p>
             <div className="flex items-center gap-2">
                 <Tooltip
-                    closeDelay={0}
-                    content={<p className="rounded-md border border-light-hover bg-background px-3 py-0.5 text-default">Copy wallet address</p>}
+                    closeDelay={500}
+                    // shouldCloseOnBlur={false}
+                    content={<p className="rounded-md border border-light-hover bg-background px-3 py-0.5 text-default">{copyText}</p>}
                 >
                     <button
                         onClick={() => {
                             copyToClipboard(String(props.address))
+                            setCopyText('Address copied')
                             toast.success(`Address ${shortenAddress(String(props.address))} copied`, { style: toastStyle })
+                            setTimeout(() => setCopyText('Copy wallet address'), 1000)
                         }}
                         className="text-inactive hover:text-default"
                     >

@@ -12,6 +12,8 @@ export const APP_METADATA = {
     },
 }
 
+export const root = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : APP_METADATA.SITE_URL
+
 export const APP_THEMES: Partial<Record<AppThemes, { index: number; iconId: IconIds }>> = {
     [AppThemes.LIGHT]: { index: 0, iconId: IconIds.THEME_LIGHT },
     [AppThemes.DARK]: { index: 1, iconId: IconIds.THEME_DARK },

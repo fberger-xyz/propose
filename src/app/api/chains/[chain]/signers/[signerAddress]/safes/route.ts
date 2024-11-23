@@ -1,17 +1,17 @@
 import { extractErrorMessage, generateResponseBody } from '@/utils'
 import { NextRequest, NextResponse } from 'next/server'
 import { isAddress } from 'ethers'
-import { ListSafesForDelegate } from '@/interfaces'
 import { SUPPORTED_CHAINS } from '@/config/chains.config'
 import { SupportedChains } from '@/enums'
+import { ListSafesForSigner } from '@/interfaces'
 
 // https://nextjs.org/docs/14/app/building-your-application/routing/route-handlers#dynamic-route-segments
 // https://docs.safe.global/core-api/transaction-service-guides/delegates
 // https://safe-transaction-base.safe.global/#/delegates/delegates_list_2
 
-export async function GET(_: NextRequest, { params }: { params: { chain: string; address: string } }) {
+export async function GET(_: NextRequest, { params }: { params: { chain: string; signerAddress: string } }) {
     // prepare response
-    const responseBody = generateResponseBody<ListSafesForDelegate>()
+    const responseBody = generateResponseBody<ListSafesForSigner>()
 
     // validate chain
     const chain = params.chain
@@ -21,17 +21,17 @@ export async function GET(_: NextRequest, { params }: { params: { chain: string;
     }
     const chainConfig = SUPPORTED_CHAINS[Number(chain) as SupportedChains]
 
-    // validate address
-    const address = params.address
-    if (!address || !isAddress(address)) {
-        responseBody.error = `'address' is required and must be a valid evm address`
+    // validate signerAddress
+    const signerAddress = params.signerAddress
+    if (!signerAddress || !isAddress(signerAddress)) {
+        responseBody.error = `'signerAddress' is required and must be a valid evm address`
         return NextResponse.json(responseBody, { status: 400 })
     }
 
     // prepare request
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 60000) // 60 seconds timeout
-    const url = `${chainConfig.transactionService.url}/api/v2/delegates/?delegate=${address}`
+    const url = `${chainConfig.transactionService.url}/api/v1/owners/${signerAddress}/safes`
 
     // request
     try {
