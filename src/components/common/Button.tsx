@@ -32,23 +32,22 @@ export default function Button(props: InterfaceButtonProps) {
 
     return (
         <button
-            className={cn(`w-fit flex items-center gap-2.5 rounded-lg border border-transparent bg-light-hover px-2.5 py-1`, {
-                'cursor-wait': loading,
-                'cursor-not-allowe text-gray-600': props.disabled,
-                'hover:border-primary hover:text-primary': !props.disabled,
-                'border-primary text-primary': props.focused,
-            })}
+            className={cn(
+                `flex items-center gap-2.5 rounded-sm border border-transparent bg-light-hover px-2.5 py-1 w-fit`,
+                {
+                    'cursor-wait': loading,
+                    'cursor-not-allowed text-inactive': props.disabled,
+                    'hover:border-primary hover:text-primary': !props.disabled,
+                    'border-primary text-primary': props.focused,
+                },
+                props.className,
+            )}
             onClick={handleClick}
             disabled={loading || props.disabled}
         >
             {props.icons?.left && <IconWrapper icon={props.icons.left} className="my-0.5 size-3.5" />}
             {props.text && <p className="truncate">{`${props.text}${loading ? '...' : ''}`}</p>}
-            {props.icons?.right && (
-                <IconWrapper
-                    icon={loading ? IconIds.LOADING : props.icons.right}
-                    className={cn('my-0.5 h-3.5 w-3.5', { 'text-orange-400': loading })}
-                />
-            )}
+            {props.icons?.right && <IconWrapper icon={props.icons.right} className="my-0.5 size-3.5" />}
         </button>
     )
 }

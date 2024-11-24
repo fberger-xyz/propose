@@ -2,6 +2,8 @@
  * signer
  */
 
+import { SupportedChains } from '@/enums'
+
 export interface ListSafesForSigner {
     safes: string[]
 }
@@ -37,4 +39,37 @@ export interface DetailsForSafe {
     fallbackHandler: string
     guard: string
     version: string
+}
+
+/**
+ * aggregation
+ */
+
+export interface AggregatedSafeData {
+    // meta
+    chainId: SupportedChains
+    address: string
+    alsoDeployedOnChains: SupportedChains[]
+
+    // raw
+    generalDetails?: DetailsForSafe
+    proposerDetails?: {
+        safe: string
+        delegate: string
+        delegator: string
+        label: string
+        expiryDate: null
+    }
+
+    // helpers
+    isCurrentWalletSigner: boolean
+    isCurrentWalletProposer: boolean
+    isCurrentWalletDellegators: boolean
+
+    // txs
+    historicsTxs: unknown[]
+    pendingTxs: unknown[]
+
+    // debank
+    debank: unknown
 }

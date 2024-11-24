@@ -11,24 +11,44 @@ import { Tooltip } from '@nextui-org/tooltip' // https://nextui.org/docs/compone
 import { IconIds, SupportedChains } from '@/enums'
 import { SUPPORTED_CHAINS } from '@/config/chains.config'
 import { useState } from 'react'
+import { useAccount } from 'wagmi'
+import { blo } from 'blo'
 
 export function AddressWithActions(props: { chain?: SupportedChains; address: string }) {
+    const account = useAccount()
     const [copyText, setCopyText] = useState('Copy wallet address')
     return (
-        <div className="flex items-center gap-2.5 rounded-sm bg-light-hover px-2.5 py-1 text-base hover:bg-light-hover">
+        <div className="flex w-fit items-center gap-2.5 rounded-sm bg-light-hover px-2.5 py-2 text-base hover:bg-light-hover">
             {props.chain && (
                 <Image
                     src={`https://safe-transaction-assets.safe.global/chains/${props.chain}/chain_logo.png`}
                     width={20}
                     height={20}
                     alt={SUPPORTED_CHAINS[props.chain].gnosisPrefix}
+                    // className='-mr-5'
                 />
             )}
-            <p>{shortenAddress(String(props.address))}</p>
+            <Tooltip
+                showArrow={true}
+                closeDelay={500}
+                content={
+                    <p className="rounded-md border border-light-hover bg-background px-3 py-0.5 text-default">
+                        Identicon for {shortenAddress(String(props.address))}
+                    </p>
+                }
+            >
+                <Image alt={props.address} src={blo(props.address as `0x${string}`)} width={20} height={20} className="rounded-sm" />
+            </Tooltip>
+            {account.address && account.address === props.address ? (
+                <p className="w-24 truncate text-sm font-bold text-primary">Logged Wallet</p>
+            ) : (
+                <p className="w-24 truncate text-sm">{shortenAddress(String(props.address))}</p>
+            )}
+
             <div className="flex items-center gap-2">
                 <Tooltip
+                    showArrow={true}
                     closeDelay={500}
-                    // shouldCloseOnBlur={false}
                     content={<p className="rounded-md border border-light-hover bg-background px-3 py-0.5 text-default">{copyText}</p>}
                 >
                     <button
@@ -44,6 +64,7 @@ export function AddressWithActions(props: { chain?: SupportedChains; address: st
                     </button>
                 </Tooltip>
                 <Tooltip
+                    showArrow={true}
                     closeDelay={0}
                     content={
                         <div className="flex items-center gap-2 rounded-md border border-light-hover bg-background px-3 py-0.5 text-default">

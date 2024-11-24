@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { BaseError, useAccount, useConnect, useDisconnect, useConfig } from 'wagmi'
 import { useEffect, useRef } from 'react'
 import { createModal } from '@rabby-wallet/rabbykit'
@@ -14,6 +15,7 @@ import { signOut } from 'next-auth/react'
 import LinkWrapper from '../common/LinkWrapper'
 import SvgMapper from '../common/SvgMapper'
 import { Tooltip } from '@nextui-org/tooltip' // https://nextui.org/docs/components/tooltip
+import { blo } from 'blo'
 
 export function ConnectOrDisconnect() {
     const account = useAccount()
@@ -36,7 +38,7 @@ export function ConnectOrDisconnect() {
         }
     }, [config])
     useEffect(() => {
-        if (account.status === 'connected') toast.success(`Connected wallet ${shortenAddress(account.address)}`, { style: toastStyle })
+        if (account.status === 'connected') toast.success('Connected wallet', { style: toastStyle })
     }, [account.status])
     useEffect(() => {
         if (error) toast.error(`Wallet error: ${(error as BaseError).shortMessage}`, { style: toastStyle })
@@ -54,10 +56,14 @@ export function ConnectOrDisconnect() {
         </button>
     ) : account.isConnected ? (
         <div className="z-50 flex items-center gap-3 rounded-sm bg-light-hover px-2.5 py-1 hover:bg-light-hover">
-            <div className="size-2 rounded-full bg-green-500" />
-            <p>{shortenAddress(String(account.address))}</p>
+            {/* <div className="size-2 rounded-full bg-green-500" /> */}
+            <Image alt={String(account.address)} src={blo(account.address as `0x${string}`)} width={20} height={20} className="rounded-sm" />
+            <p className="font-bold text-primary">{shortenAddress(String(account.address))}</p>
             <div className="flex items-center gap-2">
-                <Tooltip content={<p className="text-default">Copy wallet address</p>}>
+                <Tooltip
+                    showArrow={true}
+                    content={<p className="rounded-md border border-light-hover bg-background px-3 py-0.5 text-default">Copy wallet address</p>}
+                >
                     <button
                         onClick={() => {
                             copyToClipboard(String(account.address))
@@ -68,14 +74,20 @@ export function ConnectOrDisconnect() {
                         <IconWrapper icon={IconIds.CARBON_COPY} className="size-4" />
                     </button>
                 </Tooltip>
-                <Tooltip content={<p className="text-default">Watch in Debank</p>}>
+                <Tooltip
+                    showArrow={true}
+                    content={<p className="rounded-md border border-light-hover bg-background px-3 py-0.5 text-default">Watch in Debank</p>}
+                >
                     <div className="hidden items-center sm:flex">
                         <LinkWrapper href={`https://debank.com/profile/${account.address}`} target="_blank" className="opacity-50 hover:opacity-100">
                             <SvgMapper icon={IconIds.DEBANK} className="size-4 grayscale hover:grayscale-0" />
                         </LinkWrapper>
                     </div>
                 </Tooltip>
-                <Tooltip content={<p className="text-default">Disconnect wallet</p>}>
+                <Tooltip
+                    showArrow={true}
+                    content={<p className="rounded-md border border-light-hover bg-background px-3 py-0.5 text-default">Disconnect wallet</p>}
+                >
                     <button
                         onClick={async () => {
                             try {

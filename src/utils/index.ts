@@ -3,6 +3,7 @@ export * from './error.util'
 export * from './date.util'
 export * from './format.util'
 export * from './requests.util'
+export * from './safes.util'
 
 export const copyToClipboard = (value: string) => {
     try {

@@ -5,14 +5,16 @@ import { root } from '@/config/app.config'
 import { SUPPORTED_CHAINS } from '@/config/chains.config'
 import { toastStyle } from '@/config/toasts.config'
 import { SupportedChains } from '@/enums'
-import { DetailsForSafe, ListOfSafesFromDelegateEndpoint, ListSafesForSigner } from '@/interfaces'
+import { AggregatedSafeData, DetailsForSafe, ListOfSafesFromDelegateEndpoint, ListSafesForSigner } from '@/interfaces'
 import { useQueries } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { useAccount } from 'wagmi'
 import { AddressWithActions } from '@/components/rabbyKit/AddressWithActions'
 import { useSafesStore } from '@/stores/safes.store'
-import { shortenAddress } from '@/utils'
+import { NewAggregatedSafeData } from '@/utils'
+import Button from '@/components/common/Button'
+import { IdenticonWithActions } from '@/components/rabbyKit/IdenticonWithActions'
 
 export default function Page() {
     /**
@@ -23,116 +25,105 @@ export default function Page() {
     const unauthorized = searchParams.get('unauthorized') ?? ''
     const account = useAccount()
     if (unauthorized === 'true' && !account?.address) toast.error('You must Sign-in With Ethereum', { style: toastStyle })
-    const { actions, computeds } = useSafesStore()
+    const { applicationData, actions } = useSafesStore()
 
     /**
      * test
      */
 
-    const [safesWithAddressAsSignerOrProposerQuery, safesDetailsQuery] = useQueries({
+    // const [applicationDataQuery] =
+    useQueries({
         queries: [
             {
-                queryKey: ['safesWithAddressAsSignerOrProposerQuery', account.address],
+                queryKey: ['applicationDataQuery', account.address],
                 queryFn: async () => {
                     // prepare
                     const debug = false
-                    const chains = Object.values(SUPPORTED_CHAINS)
-                    const data: {
-                        chainId: SupportedChains
-                        safes: { asSigner: ListSafesForSigner; asProposer: ListOfSafesFromDelegateEndpoint }
-                    }[] = []
+                    // const chains = Object.values(SUPPORTED_CHAINS)
+                    const chains = [SUPPORTED_CHAINS[42161]]
+                    const applicationData: { chainId: SupportedChains; safes: AggregatedSafeData[] }[] = []
 
                     // ensure wallet is logged
-                    if (!account?.address) return data
+                    if (!account?.address) return applicationData
 
                     // debug
                     if (debug) console.log({ chains })
 
-                    // for each chain...
+                    /**
+                     * for each chain
+                     */
+
                     for (let chainIndex = 0; chainIndex < chains.length; chainIndex++) {
-                        // list safes with address as signer
+                        // ui
+                        toast.success(`Loading safes on chainId=${SUPPORTED_CHAINS[chains[chainIndex].id].name}`, { style: toastStyle })
+
+                        // prepare
+                        applicationData.push({ chainId: chains[chainIndex].id, safes: [] })
+                        const chainIdIndex = applicationData.findIndex((_chain) => _chain.chainId === chains[chainIndex].id)
+
+                        // 1. list safes with address as signer
                         const asSignerEndpoint = `${root}/api/chains/${chains[chainIndex].id}/signers/${account?.address}/safes`
                         const safesWithSigner = await fetch(asSignerEndpoint)
                         if (!safesWithSigner.ok) throw new Error((await safesWithSigner.json()).error)
                         const safesWithSignerJson = (await safesWithSigner.json()) as { data: ListSafesForSigner }
 
-                        // list safes with address as proposer
+                        // store safes where wallet signs
+                        for (let asSignerIndex = 0; asSignerIndex < safesWithSignerJson.data.safes.length; asSignerIndex++) {
+                            const toPush = NewAggregatedSafeData(chains[chainIndex].id, safesWithSignerJson.data.safes[asSignerIndex])
+                            toPush.isCurrentWalletSigner = true
+                            applicationData[chainIdIndex].safes.push(toPush)
+                        }
+
+                        // 2. list safes with address as proposer
                         const asProposerEndpoint = `${root}/api/chains/${chains[chainIndex].id}/proposers/${account?.address}/safes`
                         const safesWithProposerReponse = await fetch(asProposerEndpoint)
                         if (!safesWithProposerReponse.ok) throw new Error((await safesWithProposerReponse.json()).error)
                         const safesWithProposerJson = (await safesWithProposerReponse.json()) as { data: ListOfSafesFromDelegateEndpoint }
 
-                        // store result
-                        data.push({
-                            chainId: chains[chainIndex].id,
-                            safes: { asSigner: safesWithSignerJson.data, asProposer: safesWithProposerJson.data },
-                        })
+                        // store safes where wallet proposes
+                        for (let asProposerIndex = 0; asProposerIndex < safesWithProposerJson.data.results.length; asProposerIndex++) {
+                            const { safe: safeAddress, delegate, delegator } = safesWithProposerJson.data.results[asProposerIndex]
+                            let safeIndex = applicationData[chainIdIndex].safes.findIndex((safe) => safe.address === safeAddress)
+                            if (safeIndex < 0) {
+                                const toPush = NewAggregatedSafeData(chains[chainIndex].id, safeAddress)
+                                applicationData[chainIdIndex].safes.push(toPush)
+                                safeIndex = applicationData[chainIdIndex].safes.findIndex((safe) => safe.address === safeAddress)
+                            }
+                            applicationData[chainIdIndex].safes[safeIndex].proposerDetails = safesWithProposerJson.data.results[asProposerIndex]
+                            applicationData[chainIdIndex].safes[safeIndex].isCurrentWalletProposer = account.address === delegate
+                            applicationData[chainIdIndex].safes[safeIndex].isCurrentWalletDellegators = account.address === delegator
+                        }
                     }
 
-                    // debug
-                    if (debug) console.log('safesWithAddressAsSignerOrProposerQuery', { data })
+                    /**
+                     * for each safe
+                     */
 
-                    // ui
-                    toast.success(`Listed safes where ${shortenAddress(account.address)} is a signer or proposer`, {
-                        duration: 2000,
-                        style: { minWidth: '450px', ...toastStyle },
-                    })
-
-                    // store
-                    actions.setSafesWithAddressAsSignerOrProposer(data)
-
-                    // end
-                    return data
-                },
-                retry: false,
-                refetchOnWindowFocus: false,
-            },
-            {
-                queryKey: ['safesDetailsQuery', account.address, computeds.getSafesByChains().length],
-                queryFn: async () => {
-                    // prepare
-                    const debug = false
-                    const data: { chainId: SupportedChains; safes: { address: string; details: DetailsForSafe }[] }[] = []
-                    const safesByChains = computeds.getSafesByChains()
-
-                    // ensure wallet is logged
-                    if (!safesByChains.length) return data
-
-                    // for each chain...
-                    for (let chainIndex = 0; chainIndex < safesByChains.length; chainIndex++) {
-                        // prepare
-                        const safes: { address: string; details: DetailsForSafe }[] = []
-
-                        // for each safe
-                        for (let safeIndex = 0; safeIndex < safesByChains[chainIndex].safes.length; safeIndex++) {
+                    for (let chainIndex = 0; chainIndex < applicationData.length; chainIndex++) {
+                        for (let safeIndex = 0; safeIndex < applicationData[chainIndex]?.safes.length; safeIndex++) {
                             // fetch details
-                            const safeAddress = safesByChains[chainIndex].safes[safeIndex]
-                            const endpoint = `${root}/api/chains/${safesByChains[chainIndex].chainId}/safes/${safeAddress}/details`
+                            const safeAddress = applicationData[chainIndex]?.safes[safeIndex].address
+                            const endpoint = `${root}/api/chains/${applicationData[chainIndex].chainId}/safes/${safeAddress}/details`
                             const safesDetailsReponse = await fetch(endpoint)
                             if (!safesDetailsReponse.ok) throw new Error((await safesDetailsReponse.json()).error)
                             const safeDetailsJson = (await safesDetailsReponse.json()) as { data: DetailsForSafe }
-
-                            // store
-                            safes.push({ address: safeAddress, details: safeDetailsJson.data })
+                            applicationData[chainIndex].safes[safeIndex].generalDetails = safeDetailsJson.data
                         }
-
-                        // store
-                        data.push({ chainId: safesByChains[chainIndex].chainId, safes })
                     }
 
                     // debug
-                    if (debug) console.log('safesDetailsQuery', { data })
+                    if (debug) console.log('applicationDataQuery', { applicationData })
 
                     // ui
-                    toast.success(`Loaded safes details`, { duration: 2000, style: toastStyle })
+                    toast.success(`Loaded safes`, { duration: 2000, style: toastStyle })
 
                     // store
-                    actions.setSafesDetails(data)
+                    actions.setApplicationData(applicationData)
 
                     // end
-                    return data
+                    return applicationData
                 },
-                // retry: false,
+                retry: false,
                 refetchOnWindowFocus: false,
             },
         ],
@@ -141,109 +132,112 @@ export default function Page() {
     return (
         <PageWrapper className="mb-10 gap-5">
             {account.address ? (
-                <div className="flex w-full flex-col gap-6">
-                    {/* signer */}
-                    <div className="flex w-full flex-col gap-2">
-                        <p className="text-lg font-bold text-primary">Safes where I sign</p>
-                        {safesWithAddressAsSignerOrProposerQuery.data?.length ? (
-                            safesWithAddressAsSignerOrProposerQuery.data.some((chain) => chain.safes?.asSigner.safes.length) ? (
-                                // chains
-                                safesWithAddressAsSignerOrProposerQuery.data
-                                    .filter((chain) => chain.safes?.asSigner.safes.length)
-                                    .map((chain) => (
-                                        <div key={chain.chainId} className="flex flex-col gap-2 px-2">
-                                            <div className="flex w-full items-center gap-4">
+                <div className="flex w-full flex-col gap-4">
+                    {/* header */}
+                    <div className="flex w-full items-baseline gap-4">
+                        <p className="text-lg font-bold text-primary">Key metrics</p>
+                        <div className="grow border-b border-dashed border-light-hover" />
+                    </div>
+                    <p>AUM, P&L 24h/wtd/mtd/qtd/ltd</p>
+
+                    {/* header */}
+                    <div className="flex w-full items-baseline gap-4">
+                        <p className="text-lg font-bold text-primary">My safes</p>
+                        <div className="grow border-b border-dashed border-light-hover" />
+                    </div>
+
+                    {/* safes */}
+                    {applicationData.length ? (
+                        applicationData.some((chain) => chain.safes.length) ? (
+                            // chains
+                            applicationData
+                                .filter((chain) => chain.safes.length)
+                                .map((chain) => (
+                                    <div key={chain.chainId} className="flex flex-col gap-2 px-2">
+                                        {/* <div className="flex w-full items-center gap-4">
                                                 <p className="text-sm text-inactive">{SUPPORTED_CHAINS[chain.chainId].name}</p>
                                                 <div className="grow border-b border-dashed border-light-hover" />
-                                            </div>
+                                            </div> */}
 
-                                            {/* safes */}
-                                            <div className="flex flex-wrap gap-3">
-                                                {chain.safes.asSigner.safes.map((safe, safeIndex) => (
-                                                    <div key={safe} className="flex flex-col gap-1 rounded-md border border-light-hover p-2">
-                                                        <div className="flex items-center gap-1">
-                                                            <p className="text-xs text-light-hover">{safeIndex + 1}</p>
-                                                            <AddressWithActions chain={chain.chainId} address={safe} />
+                                        {/* safes */}
+                                        <div className="flex flex-wrap gap-3">
+                                            {chain.safes.map((safe) => (
+                                                <div key={safe.address} className="flex flex-col rounded-md border border-light-hover">
+                                                    <div className="flex flex-col gap-1.5 border-b border-light-hover px-3 py-2">
+                                                        <div className="flex w-full justify-between">
+                                                            <p className="text-xs text-inactive">Address</p>
+                                                            {/* <p className="text-xs text-inactive">{SUPPORTED_CHAINS[safe.chainId].name}</p> */}
                                                         </div>
-                                                        {/* <button
-                                                            onClick={() => {
-                                                                copyToClipboard(String(safe))
-                                                                toast.success(`Address ${shortenAddress(String(safe))} copied`, {
-                                                                    style: toastStyle,
-                                                                })
-                                                            }}
-                                                            className="text-inactive hover:text-default"
-                                                        >
-                                                            <IconWrapper icon={IconIds.CARBON_COPY} className="size-4" />
-                                                        </button>
-                                                        <p className="text-sm">Manage</p> */}
+                                                        <AddressWithActions chain={chain.chainId} address={safe.address} />
                                                     </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    ))
-                            ) : (
-                                <p>Not a signer of any safe</p>
-                            )
-                        ) : (
-                            <p>No data</p>
-                        )}
-                    </div>
-
-                    {/* proposer */}
-                    <div className="flex w-full flex-col gap-2">
-                        <p className="text-lg font-bold text-primary">Safes where I propose</p>
-                        {safesWithAddressAsSignerOrProposerQuery.data?.length ? (
-                            safesWithAddressAsSignerOrProposerQuery.data.some((chain) => chain.safes?.asProposer.results.length) ? (
-                                // chains
-                                safesWithAddressAsSignerOrProposerQuery.data
-                                    .filter((chain) => chain.safes?.asProposer.results.length)
-                                    .map((chain) => (
-                                        <div key={chain.chainId} className="flex flex-col gap-2 px-2">
-                                            <div className="flex w-full items-center gap-4">
-                                                <p className="text-sm text-inactive">{SUPPORTED_CHAINS[chain.chainId].name}</p>
-                                                <div className="grow border-b border-dashed border-light-hover" />
-                                            </div>
-
-                                            {/* safes */}
-                                            <div className="flex flex-wrap gap-3">
-                                                {chain.safes.asProposer.results.map((safe, safeIndex) => (
-                                                    <div key={safe.safe} className="flex flex-col gap-1 rounded-md border border-light-hover p-2">
-                                                        <p className="pl-4 text-xs">Safe</p>
-                                                        <div className="flex items-center gap-1">
-                                                            <p className="text-xs text-light-hover">{safeIndex + 1}</p>
-                                                            <AddressWithActions chain={chain.chainId} address={safe.safe} />
+                                                    {safe.generalDetails && (
+                                                        <div className="flex flex-col gap-1.5 border-b border-light-hover px-3 py-2">
+                                                            <div className="flex w-full justify-between">
+                                                                <p className="text-xs text-inactive">
+                                                                    {safe.generalDetails.owners.length} signer
+                                                                    {safe.generalDetails.owners.length > 1 ? 's' : ''}
+                                                                </p>
+                                                                <p className="text-xs text-inactive">
+                                                                    {safe.generalDetails.threshold}/{safe.generalDetails.owners.length} threshold
+                                                                </p>
+                                                            </div>
+                                                            {safe.generalDetails.owners.length > 1 ? (
+                                                                <div className="flex justify-end gap-2">
+                                                                    {safe.generalDetails.owners.map((owner) => (
+                                                                        <IdenticonWithActions
+                                                                            key={owner}
+                                                                            // chain={chain.chainId}
+                                                                            address={owner}
+                                                                        />
+                                                                    ))}
+                                                                </div>
+                                                            ) : (
+                                                                safe.generalDetails.owners.map((owner) => (
+                                                                    <AddressWithActions
+                                                                        key={owner}
+                                                                        // chain={chain.chainId}
+                                                                        address={owner}
+                                                                    />
+                                                                ))
+                                                            )}
                                                         </div>
-                                                        <div className="my-2 w-full border-b border-dashed border-inactive" />
-                                                        <p className="pl-4 text-xs">Proposer</p>
-                                                        <div className="flex items-center gap-1">
-                                                            <p className="text-xs text-light-hover">{safeIndex + 1}</p>
-                                                            <AddressWithActions chain={chain.chainId} address={safe.delegate} />
-                                                        </div>
-                                                        <div className="my-2 w-full border-b border-dashed border-inactive" />
-                                                        <p className="pl-4 text-xs">Delegator</p>
-                                                        <div className="flex items-center gap-1">
-                                                            <p className="text-xs text-light-hover">{safeIndex + 1}</p>
-                                                            <AddressWithActions chain={chain.chainId} address={safe.delegator} />
-                                                        </div>
+                                                    )}
+                                                    <div className="flex flex-col gap-1.5 border-b border-light-hover px-3 py-2">
+                                                        <p className="text-xs text-inactive">Net worth</p>
+                                                        <p className="text-xs text-secondary">100K$</p>
                                                     </div>
-                                                ))}
-                                            </div>
+                                                    <div className="flex flex-col gap-1.5 border-b border-light-hover px-3 py-2">
+                                                        <p className="text-xs text-inactive">Proposer</p>
+                                                        {safe.proposerDetails?.delegate ? (
+                                                            <AddressWithActions
+                                                                // chain={chain.chainId}
+                                                                address={safe.proposerDetails?.delegate ?? ''}
+                                                            />
+                                                        ) : (
+                                                            <p className="text-xs text-secondary">No proposer set</p>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex size-full items-end justify-end px-3 py-2">
+                                                        <Button text="Manage" className="text-sm" />
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
-                                    ))
-                            ) : (
-                                <p>Not a proposer of any safe</p>
-                            )
+                                    </div>
+                                ))
                         ) : (
-                            <p>No data</p>
-                        )}
-                    </div>
+                            <p>Not a signer of any safe</p>
+                        )
+                    ) : (
+                        <p>No data</p>
+                    )}
 
-                    {/* details */}
-                    <div className="flex w-full flex-col gap-2">
-                        <p className="text-lg font-bold text-primary">Details [debug]</p>
-                        <pre className="text-xs">{JSON.stringify(safesDetailsQuery.data, null, 2)}</pre>
+                    {/* header */}
+                    <div className="flex w-full items-baseline gap-4">
+                        <p className="text-lg font-bold text-primary">Todo</p>
+                        <div className="grow border-b border-dashed border-light-hover" />
                     </div>
+                    <p>Fetch balances</p>
                 </div>
             ) : (
                 <p>Click on Connect</p>
