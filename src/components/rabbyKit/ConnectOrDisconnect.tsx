@@ -12,13 +12,12 @@ import toast from 'react-hot-toast'
 import { toastStyle } from '@/config/toasts.config'
 import IconWrapper from '../common/IconWrapper'
 import { signOut } from 'next-auth/react'
-import LinkWrapper from '../common/LinkWrapper'
-import SvgMapper from '../common/SvgMapper'
 import { Tooltip } from '@nextui-org/tooltip' // https://nextui.org/docs/components/tooltip
 import { blo } from 'blo'
 
 export function ConnectOrDisconnect() {
     const account = useAccount()
+    const shortAddress = shortenAddress(String(account.address))
     const { error } = useConnect()
     const { disconnect } = useDisconnect()
     const { resolvedTheme } = useTheme()
@@ -58,7 +57,11 @@ export function ConnectOrDisconnect() {
         <div className="z-50 flex items-center gap-3 rounded-sm bg-light-hover px-2.5 py-1 hover:bg-light-hover">
             {/* <div className="size-2 rounded-full bg-green-500" /> */}
             <Image alt={String(account.address)} src={blo(account.address as `0x${string}`)} width={20} height={20} className="rounded-sm" />
-            <p className="font-bold text-primary">{shortenAddress(String(account.address))}</p>
+            {/* text-primary */}
+            <p className="font-bold">
+                <span className="text-inactive">0x</span>
+                {shortAddress.slice(2, shortAddress.length)}
+            </p>
             <div className="flex items-center gap-2">
                 <Tooltip
                     showArrow={true}
@@ -67,14 +70,14 @@ export function ConnectOrDisconnect() {
                     <button
                         onClick={() => {
                             copyToClipboard(String(account.address))
-                            toast.success(`Address ${shortenAddress(String(account.address))} copied`, { style: toastStyle })
+                            toast.success(`Address ${shortAddress} copied`, { style: toastStyle })
                         }}
                         className="hidden text-inactive hover:text-default sm:flex"
                     >
                         <IconWrapper icon={IconIds.CARBON_COPY} className="size-4" />
                     </button>
                 </Tooltip>
-                <Tooltip
+                {/* <Tooltip
                     showArrow={true}
                     content={<p className="rounded-md border border-light-hover bg-background px-3 py-0.5 text-default">Watch in Debank</p>}
                 >
@@ -83,7 +86,7 @@ export function ConnectOrDisconnect() {
                             <SvgMapper icon={IconIds.DEBANK} className="size-4 grayscale hover:grayscale-0" />
                         </LinkWrapper>
                     </div>
-                </Tooltip>
+                </Tooltip> */}
                 <Tooltip
                     showArrow={true}
                     content={<p className="rounded-md border border-light-hover bg-background px-3 py-0.5 text-default">Disconnect wallet</p>}

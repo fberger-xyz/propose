@@ -33,6 +33,7 @@ export const useAppStore = create<{
         //     auth: true,
         //     sublinks: [],
         // },
+        // todo add FAQ
     ],
     actions: {},
     computeds: {},

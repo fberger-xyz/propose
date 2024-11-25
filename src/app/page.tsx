@@ -5,16 +5,14 @@ import { root } from '@/config/app.config'
 import { SUPPORTED_CHAINS } from '@/config/chains.config'
 import { toastStyle } from '@/config/toasts.config'
 import { SupportedChains } from '@/enums'
-import { AggregatedSafeData, DetailsForSafe, ListOfSafesFromDelegateEndpoint, ListSafesForSigner } from '@/interfaces'
+import { AggregatedSafeData, DetailsForSafe, ListOfSafesFromDelegateEndpoint, ListSafesForSigner, SafeBalance, SafeCreation } from '@/interfaces'
 import { useQueries } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { useAccount } from 'wagmi'
-import { AddressWithActions } from '@/components/rabbyKit/AddressWithActions'
 import { useSafesStore } from '@/stores/safes.store'
 import { NewAggregatedSafeData } from '@/utils'
-import Button from '@/components/common/Button'
-import { IdenticonWithActions } from '@/components/rabbyKit/IdenticonWithActions'
+import MySafes from '@/components/app/MySafes'
 
 export default function Page() {
     /**
@@ -25,14 +23,13 @@ export default function Page() {
     const unauthorized = searchParams.get('unauthorized') ?? ''
     const account = useAccount()
     if (unauthorized === 'true' && !account?.address) toast.error('You must Sign-in With Ethereum', { style: toastStyle })
-    const { applicationData, actions } = useSafesStore()
+    const { actions } = useSafesStore()
 
     /**
      * test
      */
 
-    // const [applicationDataQuery] =
-    useQueries({
+    const [applicationDataQuery] = useQueries({
         queries: [
             {
                 queryKey: ['applicationDataQuery', account.address],
@@ -55,7 +52,7 @@ export default function Page() {
 
                     for (let chainIndex = 0; chainIndex < chains.length; chainIndex++) {
                         // ui
-                        toast.success(`Loading safes on chainId=${SUPPORTED_CHAINS[chains[chainIndex].id].name}`, { style: toastStyle })
+                        toast.success(`Loading safes on ${SUPPORTED_CHAINS[chains[chainIndex].id].name}`, { style: toastStyle })
 
                         // prepare
                         applicationData.push({ chainId: chains[chainIndex].id, safes: [] })
@@ -100,14 +97,29 @@ export default function Page() {
                      */
 
                     for (let chainIndex = 0; chainIndex < applicationData.length; chainIndex++) {
+                        toast(`Fetch safe details`, { style: toastStyle })
                         for (let safeIndex = 0; safeIndex < applicationData[chainIndex]?.safes.length; safeIndex++) {
                             // fetch details
                             const safeAddress = applicationData[chainIndex]?.safes[safeIndex].address
-                            const endpoint = `${root}/api/chains/${applicationData[chainIndex].chainId}/safes/${safeAddress}/details`
-                            const safesDetailsReponse = await fetch(endpoint)
-                            if (!safesDetailsReponse.ok) throw new Error((await safesDetailsReponse.json()).error)
-                            const safeDetailsJson = (await safesDetailsReponse.json()) as { data: DetailsForSafe }
+                            const detailsEndpoint = `${root}/api/chains/${applicationData[chainIndex].chainId}/safes/${safeAddress}/details`
+                            const detailsReponse = await fetch(detailsEndpoint)
+                            if (!detailsReponse.ok) throw new Error((await detailsReponse.json()).error)
+                            const safeDetailsJson = (await detailsReponse.json()) as { data: DetailsForSafe }
                             applicationData[chainIndex].safes[safeIndex].generalDetails = safeDetailsJson.data
+
+                            // fetch creation
+                            const creationEndpoint = `${root}/api/chains/${applicationData[chainIndex].chainId}/safes/${safeAddress}/creation`
+                            const creationReponse = await fetch(creationEndpoint)
+                            if (!creationReponse.ok) throw new Error((await creationReponse.json()).error)
+                            const safeCreationJson = (await creationReponse.json()) as { data: SafeCreation }
+                            applicationData[chainIndex].safes[safeIndex].safeCreation = safeCreationJson.data
+
+                            // fetch balances
+                            const balancesEndpoint = `${root}/api/chains/${applicationData[chainIndex].chainId}/safes/${safeAddress}/balances`
+                            const balancesResponse = await fetch(balancesEndpoint)
+                            if (!balancesResponse.ok) throw new Error((await balancesResponse.json()).error)
+                            const safeBalancesJson = (await balancesResponse.json()) as { data: SafeBalance[] }
+                            applicationData[chainIndex].safes[safeIndex].balances = safeBalancesJson.data
                         }
                     }
 
@@ -130,114 +142,35 @@ export default function Page() {
     })
 
     return (
-        <PageWrapper className="mb-10 gap-5">
+        <PageWrapper>
             {account.address ? (
-                <div className="flex w-full flex-col gap-4">
-                    {/* header */}
-                    <div className="flex w-full items-baseline gap-4">
-                        <p className="text-lg font-bold text-primary">Key metrics</p>
-                        <div className="grow border-b border-dashed border-light-hover" />
-                    </div>
-                    <p>AUM, P&L 24h/wtd/mtd/qtd/ltd</p>
+                <div className="flex flex-col gap-6">
+                    <section className="flex flex-col gap-3">
+                        <div className="flex w-full items-center gap-2">
+                            <p className="text-lg font-bold text-primary">My funds</p>
+                            <div className="grow border-b border-dashed border-light-hover" />
+                            <p className="text-sm">Net worth: 0$</p>
+                        </div>
+                        {applicationDataQuery.isLoading ? <p>Loading...</p> : <MySafes />}
+                    </section>
 
-                    {/* header */}
-                    <div className="flex w-full items-baseline gap-4">
-                        <p className="text-lg font-bold text-primary">My safes</p>
-                        <div className="grow border-b border-dashed border-light-hover" />
-                    </div>
-
-                    {/* safes */}
-                    {applicationData.length ? (
-                        applicationData.some((chain) => chain.safes.length) ? (
-                            // chains
-                            applicationData
-                                .filter((chain) => chain.safes.length)
-                                .map((chain) => (
-                                    <div key={chain.chainId} className="flex flex-col gap-2 px-2">
-                                        {/* <div className="flex w-full items-center gap-4">
-                                                <p className="text-sm text-inactive">{SUPPORTED_CHAINS[chain.chainId].name}</p>
-                                                <div className="grow border-b border-dashed border-light-hover" />
-                                            </div> */}
-
-                                        {/* safes */}
-                                        <div className="flex flex-wrap gap-3">
-                                            {chain.safes.map((safe) => (
-                                                <div key={safe.address} className="flex flex-col rounded-md border border-light-hover">
-                                                    <div className="flex flex-col gap-1.5 border-b border-light-hover px-3 py-2">
-                                                        <div className="flex w-full justify-between">
-                                                            <p className="text-xs text-inactive">Address</p>
-                                                            {/* <p className="text-xs text-inactive">{SUPPORTED_CHAINS[safe.chainId].name}</p> */}
-                                                        </div>
-                                                        <AddressWithActions chain={chain.chainId} address={safe.address} />
-                                                    </div>
-                                                    {safe.generalDetails && (
-                                                        <div className="flex flex-col gap-1.5 border-b border-light-hover px-3 py-2">
-                                                            <div className="flex w-full justify-between">
-                                                                <p className="text-xs text-inactive">
-                                                                    {safe.generalDetails.owners.length} signer
-                                                                    {safe.generalDetails.owners.length > 1 ? 's' : ''}
-                                                                </p>
-                                                                <p className="text-xs text-inactive">
-                                                                    {safe.generalDetails.threshold}/{safe.generalDetails.owners.length} threshold
-                                                                </p>
-                                                            </div>
-                                                            {safe.generalDetails.owners.length > 1 ? (
-                                                                <div className="flex justify-end gap-2">
-                                                                    {safe.generalDetails.owners.map((owner) => (
-                                                                        <IdenticonWithActions
-                                                                            key={owner}
-                                                                            // chain={chain.chainId}
-                                                                            address={owner}
-                                                                        />
-                                                                    ))}
-                                                                </div>
-                                                            ) : (
-                                                                safe.generalDetails.owners.map((owner) => (
-                                                                    <AddressWithActions
-                                                                        key={owner}
-                                                                        // chain={chain.chainId}
-                                                                        address={owner}
-                                                                    />
-                                                                ))
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                    <div className="flex flex-col gap-1.5 border-b border-light-hover px-3 py-2">
-                                                        <p className="text-xs text-inactive">Net worth</p>
-                                                        <p className="text-xs text-secondary">100K$</p>
-                                                    </div>
-                                                    <div className="flex flex-col gap-1.5 border-b border-light-hover px-3 py-2">
-                                                        <p className="text-xs text-inactive">Proposer</p>
-                                                        {safe.proposerDetails?.delegate ? (
-                                                            <AddressWithActions
-                                                                // chain={chain.chainId}
-                                                                address={safe.proposerDetails?.delegate ?? ''}
-                                                            />
-                                                        ) : (
-                                                            <p className="text-xs text-secondary">No proposer set</p>
-                                                        )}
-                                                    </div>
-                                                    <div className="flex size-full items-end justify-end px-3 py-2">
-                                                        <Button text="Manage" className="text-sm" />
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                ))
-                        ) : (
-                            <p>Not a signer of any safe</p>
-                        )
-                    ) : (
-                        <p>No data</p>
-                    )}
-
-                    {/* header */}
-                    <div className="flex w-full items-baseline gap-4">
-                        <p className="text-lg font-bold text-primary">Todo</p>
-                        <div className="grow border-b border-dashed border-light-hover" />
-                    </div>
-                    <p>Fetch balances</p>
+                    <section className="flex flex-col gap-3">
+                        <div className="flex w-full items-center gap-2">
+                            <p className="text-lg font-bold text-primary">FAQ</p>
+                            <div className="grow border-b border-dashed border-light-hover" />
+                        </div>
+                        {[
+                            { value: 'Where tf are my funds ?', answers: ['Recall this page is just a simple frontend wrapper over pseudonym data'] },
+                            { value: 'Are my funds secured ?', answers: [] },
+                            { value: 'Am I being rightfully advised ?', answers: [] },
+                            { value: 'How can I withdraw my funds if need be ?', answers: [] },
+                            { value: 'Where is support', answers: [] },
+                        ].map((question) => (
+                            <button className="flex flex-col rounded-sm border border-very-light-hover px-2 py-1 text-inactive hover:text-default">
+                                <p>{question.value}</p>
+                            </button>
+                        ))}
+                    </section>
                 </div>
             ) : (
                 <p>Click on Connect</p>

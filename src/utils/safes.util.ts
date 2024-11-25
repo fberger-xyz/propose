@@ -10,6 +10,8 @@ export const NewAggregatedSafeData = (chainId: SupportedChains, address: string)
     // raw
     generalDetails: undefined,
     proposerDetails: undefined,
+    safeCreation: undefined,
+    balances: [],
 
     // helpers
     isCurrentWalletSigner: false,

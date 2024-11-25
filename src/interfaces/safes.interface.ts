@@ -42,6 +42,37 @@ export interface DetailsForSafe {
 }
 
 /**
+ * creation
+ */
+
+export interface SafeCreation {
+    created: string
+    creator: string
+    transactionHash: string
+    factoryAddress: string
+    masterCopy: string
+    setupData: string
+    saltNonce: null
+    dataDecoded: null
+    userOperation: null
+}
+
+/**
+ * balances
+ */
+
+export interface SafeBalance {
+    tokenAddress: null | string
+    token: null | {
+        name: string
+        symbol: string
+        decimals: number
+        logoUri: string
+    }
+    balance: string
+}
+
+/**
  * aggregation
  */
 
@@ -60,6 +91,8 @@ export interface AggregatedSafeData {
         label: string
         expiryDate: null
     }
+    safeCreation?: SafeCreation
+    balances: SafeBalance[]
 
     // helpers
     isCurrentWalletSigner: boolean

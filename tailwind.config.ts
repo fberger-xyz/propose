@@ -15,6 +15,9 @@ const config: Config = {
                 'very-light-hover': 'var(--color-very-light-hover)',
                 'light-border': 'var(--color-light-border)',
             },
+            fontSize: {
+                '2xs': '0.5rem',
+            },
         },
     },
     plugins: [],

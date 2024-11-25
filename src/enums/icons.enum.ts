@@ -33,6 +33,7 @@ export enum IconIds {
     DISCORD = 'mdi:discord',
     GITHUB = 'mdi:github',
     LINKEDIN = 'mdi:linkedin',
+    SIGNAL = 'lineicons:signal-app',
 
     // evm
     TRANSACTION = 'carbon:text-align-center',
@@ -43,4 +44,5 @@ export enum IconIds {
     WALLET = 'carbon:wallet',
     DISCONNECT = 'ant-design:disconnect-outlined',
     DEBANK = 'DEBANK',
+    SAFE = 'SAFE',
 }
