@@ -11,7 +11,7 @@ import { Tooltip } from '@nextui-org/tooltip' // https://nextui.org/docs/compone
 import { IconIds, SupportedChains } from '@/enums'
 import { SUPPORTED_CHAINS } from '@/config/chains.config'
 import { useState } from 'react'
-import { useAccount } from 'wagmi'
+import { useAccount, useEnsName } from 'wagmi'
 import { blo } from 'blo'
 import { useSafesStore } from '@/stores/safes.store'
 
@@ -30,6 +30,7 @@ export function AddressWithActions({
 }) {
     const account = useAccount()
     const { isHoveringLoggedWallet } = useSafesStore()
+    const { data: ensName } = useEnsName({ address: props.address as `0x${string}` })
     const shortAddress = shortenAddress(String(props.address))
     const [copied, setCopied] = useState(false)
     const [copyText, setCopyText] = useState('Copy wallet address')
@@ -68,14 +69,22 @@ export function AddressWithActions({
                 account.address && account.address === props.address ? (
                     // text-primary
                     <p className="text-sm font-bold">
-                        <span className="text-inactive">0x</span>
-                        {shortAddress.slice(2, shortAddress.length)}
+                        {ensName ?? (
+                            <>
+                                <span className="text-inactive">0x</span>
+                                {shortAddress.slice(2, shortAddress.length)}
+                            </>
+                        )}
                     </p>
                 ) : (
                     <p className="text-sm font-bold">
                         {props.chain && props.isMultisig && <span className="text-inactive">{SUPPORTED_CHAINS[props.chain].gnosisPrefix}:</span>}
-                        <span className="text-inactive">0x</span>
-                        {shortAddress.slice(2, shortAddress.length)}
+                        {ensName ?? (
+                            <>
+                                <span className="text-inactive">0x</span>
+                                {shortAddress.slice(2, shortAddress.length)}
+                            </>
+                        )}
                     </p>
                 )
             ) : null}
@@ -135,7 +144,7 @@ export function AddressWithActions({
                         showArrow
                         content={
                             <div className="flex items-center gap-2 rounded-md border border-light-hover bg-very-light-hover px-3 py-0.5 text-default">
-                                <p>Open in Safe</p>
+                                <p>Open in app.safe (no KYC)</p>
                                 <IconWrapper icon={IconIds.IC_BASELINE_OPEN_IN_NEW} className="size-4" />
                             </div>
                         }

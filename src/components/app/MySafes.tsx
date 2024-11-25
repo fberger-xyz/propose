@@ -25,7 +25,10 @@ export default function MySafes() {
                         <div className="flex flex-wrap gap-3">
                             {chain.safes.map((safe, safeIndex) => (
                                 // for each safe
-                                <div key={safe.address} className="flex min-w-80 flex-col rounded-sm border border-light-hover hover:border-inactive">
+                                <div
+                                    key={safe.address}
+                                    className="flex min-w-80 flex-col rounded-sm border border-light-hover hover:border-secondary"
+                                >
                                     <div className="flex flex-col gap-1.5 border-b border-light-hover px-3 py-2">
                                         <div className="flex w-full justify-between">
                                             <p className="text-xs text-inactive">Safe #{safeIndex + 1}</p>

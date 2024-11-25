@@ -52,7 +52,7 @@ export default function Page() {
                      */
 
                     // ui
-                    toast(`Loading data...`, { style: toastStyle })
+                    toast(`Loading your portfolio...`, { style: toastStyle })
                     for (let chainIndex = 0; chainIndex < chains.length; chainIndex++) {
                         // prepare
                         applicationData.push({ chainId: chains[chainIndex].id, safes: [] })
@@ -96,7 +96,7 @@ export default function Page() {
                      * for each safe
                      */
 
-                    toast(`Loading more data...`, { style: toastStyle })
+                    toast(`Loading blockchain data...`, { style: toastStyle })
                     for (let chainIndex = 0; chainIndex < applicationData.length; chainIndex++) {
                         for (let safeIndex = 0; safeIndex < applicationData[chainIndex]?.safes.length; safeIndex++) {
                             // fetch details
