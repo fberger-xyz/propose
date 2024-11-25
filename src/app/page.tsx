@@ -144,17 +144,17 @@ export default function Page() {
     return (
         <PageWrapper>
             {account.address ? (
-                <div className="flex flex-col gap-6">
-                    <section className="flex flex-col gap-3">
+                <div className="flex w-full flex-col gap-6">
+                    <section className="flex w-full flex-col gap-3">
                         <div className="flex w-full items-center gap-2">
                             <p className="text-lg font-bold text-primary">My funds</p>
                             <div className="grow border-b border-dashed border-light-hover" />
-                            <p className="text-sm">Net worth: 0$</p>
+                            {/* <p className="text-sm">Net worth: 0$</p> */}
                         </div>
                         {applicationDataQuery.isLoading ? <p>Loading...</p> : <MySafes />}
                     </section>
 
-                    <section className="flex flex-col gap-3">
+                    <section className="flex w-full flex-col gap-3">
                         <div className="flex w-full items-center gap-2">
                             <p className="text-lg font-bold text-primary">FAQ</p>
                             <div className="grow border-b border-dashed border-light-hover" />
