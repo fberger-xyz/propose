@@ -64,7 +64,7 @@ export default function MySafes() {
                                                     {safe.generalDetails.nonce} transaction{safe.generalDetails.nonce > 1 ? 's' : ''}
                                                 </p>
                                             ) : (
-                                                <p className="text-xs text-inactive">No transaction</p>
+                                                <p className="text-xs">No transaction</p>
                                             )}
                                         </div>
                                     )}
@@ -73,7 +73,7 @@ export default function MySafes() {
                                         {safe.balances.filter((asset) => asset.token?.name).length ? (
                                             safe.balances.filter((asset) => asset.token?.name).map((asset) => <p key={asset.token?.name}></p>)
                                         ) : (
-                                            <p className="text-xs text-inactive">0 K$</p>
+                                            <p className="text-xs">0 K$</p>
                                         )}
                                     </div>
                                     <div className="flex flex-col gap-1.5 border-b border-light-hover px-3 py-2">
@@ -81,7 +81,7 @@ export default function MySafes() {
                                         {safe.proposerDetails?.delegate ? (
                                             <AddressWithActions address={safe.proposerDetails?.delegate ?? ''} />
                                         ) : (
-                                            <p className="text-xs text-secondary">No proposer set</p>
+                                            <p className="text-xs">None</p>
                                         )}
                                     </div>
                                     <div className="flex size-full items-end justify-end px-3 py-2">

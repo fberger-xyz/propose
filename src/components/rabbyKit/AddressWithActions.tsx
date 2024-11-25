@@ -63,12 +63,12 @@ export function AddressWithActions({
             {showAddress ? (
                 account.address && account.address === props.address ? (
                     // text-primary
-                    <p className="w-24 truncate text-sm font-bold">
+                    <p className="text-sm font-bold">
                         <span className="text-inactive">0x</span>
                         {shortAddress.slice(2, shortAddress.length)}
                     </p>
                 ) : (
-                    <p className="w-24 truncate text-sm font-bold">
+                    <p className="text-sm font-bold">
                         {props.chain && props.isMultisig && <span className="text-inactive">{SUPPORTED_CHAINS[props.chain].gnosisPrefix}:</span>}
                         <span className="text-inactive">0x</span>
                         {shortAddress.slice(2, shortAddress.length)}

@@ -147,11 +147,11 @@ export default function Page() {
                 <div className="flex w-full flex-col gap-8">
                     <section className="flex w-full flex-col gap-3">
                         <div className="flex w-full items-baseline gap-4">
-                            <p className="text-lg font-bold text-primary">My funds</p>
+                            <p className="text-lg font-bold text-primary">Assets</p>
                             <div className="grow border-b border-dashed border-very-light-hover" />
                             {/* <p className="text-sm">Net worth: 0$</p> */}
                         </div>
-                        {applicationDataQuery.isLoading ? <p>Loading your data...</p> : <MySafes />}
+                        {applicationDataQuery.isLoading ? <p>Loading your assets data...</p> : <MySafes />}
                     </section>
 
                     <section className="flex w-full flex-col gap-3">
