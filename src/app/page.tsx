@@ -50,10 +50,9 @@ export default function Page() {
                      * for each chain
                      */
 
+                    // ui
+                    toast(`Loading data...`, { style: toastStyle })
                     for (let chainIndex = 0; chainIndex < chains.length; chainIndex++) {
-                        // ui
-                        toast.success(`Loading safes on ${SUPPORTED_CHAINS[chains[chainIndex].id].name}`, { style: toastStyle })
-
                         // prepare
                         applicationData.push({ chainId: chains[chainIndex].id, safes: [] })
                         const chainIdIndex = applicationData.findIndex((_chain) => _chain.chainId === chains[chainIndex].id)
@@ -96,8 +95,8 @@ export default function Page() {
                      * for each safe
                      */
 
+                    toast(`Loading more data...`, { style: toastStyle })
                     for (let chainIndex = 0; chainIndex < applicationData.length; chainIndex++) {
-                        toast(`Fetch safe details`, { style: toastStyle })
                         for (let safeIndex = 0; safeIndex < applicationData[chainIndex]?.safes.length; safeIndex++) {
                             // fetch details
                             const safeAddress = applicationData[chainIndex]?.safes[safeIndex].address
@@ -127,7 +126,7 @@ export default function Page() {
                     if (debug) console.log('applicationDataQuery', { applicationData })
 
                     // ui
-                    toast.success(`Loaded safes`, { duration: 2000, style: toastStyle })
+                    toast.success(`Loaded data`, { duration: 2000, style: toastStyle })
 
                     // store
                     actions.setApplicationData(applicationData)

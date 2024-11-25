@@ -90,7 +90,7 @@ export function AddressWithActions({
                             copyToClipboard(String(props.address))
                             setCopyText('Address copied')
                             setCopied(true)
-                            toast.success(`Address ${shortAddress} copied`, { style: toastStyle })
+                            toast.success(`Address copied`, { style: toastStyle })
                             setTimeout(() => {
                                 setCopied(false)
                                 setCopyText('Copy wallet address')

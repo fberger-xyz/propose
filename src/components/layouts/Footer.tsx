@@ -21,7 +21,7 @@ export default function Footer(props: FooterProps) {
     if (isInFrame) return null
     return (
         <div className={cn('fixed bottom-0 w-full flex justify-end text-sm z-0', props.className)}>
-            <div className="flex items-end gap-4 rounded-ss-xl bg-background p-3 opacity-80 backdrop-blur-sm">
+            <div className="flex items-end gap-4 rounded-ss-xl border-l border-t border-very-light-hover bg-background p-3 opacity-80 backdrop-blur-sm md:border-transparent">
                 {/* <p>Support</p> */}
                 {[
                     // { href: `https://${APP_METADATA.SITE_AUTHOR}/projects/${APP_METADATA.SITE_NAME.toLowerCase()}`, icon: IconIds.WEBSITE },

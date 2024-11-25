@@ -56,7 +56,13 @@ export function ConnectOrDisconnect() {
     ) : account.isConnected ? (
         <div className="z-50 flex items-center gap-3 rounded-sm bg-light-hover px-2.5 py-1 hover:bg-light-hover">
             {/* <div className="size-2 rounded-full bg-green-500" /> */}
-            <Image alt={String(account.address)} src={blo(account.address as `0x${string}`)} width={20} height={20} className="rounded-sm" />
+            <Image
+                alt={String(account.address)}
+                src={blo(account.address as `0x${string}`)}
+                width={20}
+                height={20}
+                className="hidden rounded-sm md:flex"
+            />
             {/* text-primary */}
             <p className="font-bold">
                 <span className="text-inactive">0x</span>
