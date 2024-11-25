@@ -151,7 +151,7 @@ export default function Page() {
                             <div className="grow border-b border-dashed border-very-light-hover" />
                             {/* <p className="text-sm">Net worth: 0$</p> */}
                         </div>
-                        {applicationDataQuery.isLoading ? <p>Loading your {denomination}...</p> : <MySafes />}
+                        {applicationDataQuery.isLoading ? <p className="text-orange-400">Loading your {denomination}...</p> : <MySafes />}
                     </section>
 
                     <section className="flex w-full flex-col gap-3">
