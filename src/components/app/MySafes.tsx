@@ -25,7 +25,7 @@ export default function MySafes() {
                         <div className="flex flex-wrap gap-3">
                             {chain.safes.map((safe, safeIndex) => (
                                 // for each safe
-                                <div key={safe.address} className="flex min-w-72 flex-col rounded-sm border border-light-hover">
+                                <div key={safe.address} className="flex min-w-80 flex-col rounded-sm border border-light-hover hover:border-inactive">
                                     <div className="flex flex-col gap-1.5 border-b border-light-hover px-3 py-2">
                                         <div className="flex w-full justify-between">
                                             <p className="text-xs text-inactive">Safe #{safeIndex + 1}</p>
@@ -54,17 +54,19 @@ export default function MySafes() {
                                         <div className="flex flex-col gap-1.5 border-b border-light-hover px-3 py-2">
                                             <div className="flex w-full justify-between">
                                                 <p className="text-xs text-inactive">
-                                                    Threshold {safe.generalDetails.threshold}/{safe.generalDetails.owners.length}
+                                                    Owners {safe.generalDetails.threshold}/{safe.generalDetails.owners.length}
                                                 </p>
                                             </div>
                                             {safe.generalDetails.owners.length > 1 ? (
                                                 <div className="flex gap-2">
                                                     {safe.generalDetails.owners.map((owner) => (
-                                                        <AddressWithActions key={owner} address={owner} showAddress={false} />
+                                                        <AddressWithActions key={owner} address={owner} showAddress={false} showDebank={true} />
                                                     ))}
                                                 </div>
                                             ) : (
-                                                safe.generalDetails.owners.map((owner) => <AddressWithActions key={owner} address={owner} />)
+                                                safe.generalDetails.owners.map((owner) => (
+                                                    <AddressWithActions key={owner} address={owner} showDebank={true} />
+                                                ))
                                             )}
                                         </div>
                                     )}
@@ -96,7 +98,7 @@ export default function MySafes() {
                                         {safe.proposerDetails?.delegate ? (
                                             <AddressWithActions address={safe.proposerDetails?.delegate ?? ''} />
                                         ) : (
-                                            <button className="flex w-fit items-center gap-2.5 rounded-sm border border-dashed border-inactive px-1.5 py-1 text-base text-inactive hover:border-solid hover:border-primary hover:bg-very-light-hover hover:text-primary">
+                                            <button className="flex w-fit items-center gap-2.5 rounded-sm border border-dashed border-inactive px-2 py-1 text-base text-inactive hover:border-solid hover:border-primary hover:bg-very-light-hover hover:text-primary">
                                                 <p>Add a proposer</p>
                                                 <IconWrapper icon={IconIds.ADD_CIRCLED} className="size-4" />
                                             </button>

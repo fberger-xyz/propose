@@ -6,7 +6,7 @@ import toast from 'react-hot-toast'
 import { toastStyle } from '@/config/toasts.config'
 import IconWrapper from '../common/IconWrapper'
 import LinkWrapper from '../common/LinkWrapper'
-import SvgMapper from '../common/SvgMapper'
+// import SvgMapper from '../common/SvgMapper'
 import { Tooltip } from '@nextui-org/tooltip' // https://nextui.org/docs/components/tooltip
 import { IconIds, SupportedChains } from '@/enums'
 import { SUPPORTED_CHAINS } from '@/config/chains.config'
@@ -124,7 +124,8 @@ export function AddressWithActions({
                                 target="_blank"
                                 className="opacity-50 hover:opacity-100"
                             >
-                                <SvgMapper icon={IconIds.DEBANK} className="size-4 grayscale hover:grayscale-0" />
+                                {/* <SvgMapper icon={IconIds.DEBANK} className="size-4 grayscale hover:grayscale-0" /> */}
+                                <IconWrapper icon={IconIds.IC_BASELINE_OPEN_IN_NEW} className="size-4" />
                             </LinkWrapper>
                         </div>
                     </Tooltip>
