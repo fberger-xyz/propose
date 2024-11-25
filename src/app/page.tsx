@@ -144,20 +144,20 @@ export default function Page() {
     return (
         <PageWrapper>
             {account.address ? (
-                <div className="flex w-full flex-col gap-6">
+                <div className="flex w-full flex-col gap-8">
                     <section className="flex w-full flex-col gap-3">
-                        <div className="flex w-full items-center gap-2">
+                        <div className="flex w-full items-baseline gap-2">
                             <p className="text-lg font-bold text-primary">My funds</p>
-                            <div className="grow border-b border-dashed border-light-hover" />
+                            <div className="grow border-b border-dashed border-very-light-hover" />
                             {/* <p className="text-sm">Net worth: 0$</p> */}
                         </div>
-                        {applicationDataQuery.isLoading ? <p>Loading...</p> : <MySafes />}
+                        {applicationDataQuery.isLoading ? <p>Loading your data...</p> : <MySafes />}
                     </section>
 
                     <section className="flex w-full flex-col gap-3">
-                        <div className="flex w-full items-center gap-2">
+                        <div className="flex w-full items-baseline gap-2">
                             <p className="text-lg font-bold text-primary">FAQ</p>
-                            <div className="grow border-b border-dashed border-light-hover" />
+                            <div className="grow border-b border-dashed border-very-light-hover" />
                         </div>
                         {[
                             { value: 'Where tf are my funds ?', answers: ['Recall this page is just a simple frontend wrapper over pseudonym data'] },
