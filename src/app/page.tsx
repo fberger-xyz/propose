@@ -146,7 +146,7 @@ export default function Page() {
             {account.address ? (
                 <div className="flex w-full flex-col gap-8">
                     <section className="flex w-full flex-col gap-3">
-                        <div className="flex w-full items-baseline gap-2">
+                        <div className="flex w-full items-baseline gap-4">
                             <p className="text-lg font-bold text-primary">My funds</p>
                             <div className="grow border-b border-dashed border-very-light-hover" />
                             {/* <p className="text-sm">Net worth: 0$</p> */}
@@ -155,7 +155,7 @@ export default function Page() {
                     </section>
 
                     <section className="flex w-full flex-col gap-3">
-                        <div className="flex w-full items-baseline gap-2">
+                        <div className="flex w-full items-baseline gap-4">
                             <p className="text-lg font-bold text-primary">FAQ</p>
                             <div className="grow border-b border-dashed border-very-light-hover" />
                         </div>

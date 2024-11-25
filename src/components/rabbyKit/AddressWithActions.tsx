@@ -69,6 +69,7 @@ export function AddressWithActions({
                     </p>
                 ) : (
                     <p className="w-24 truncate text-sm font-bold">
+                        {props.chain && props.isMultisig && <span className="text-inactive">{SUPPORTED_CHAINS[props.chain].gnosisPrefix}:</span>}
                         <span className="text-inactive">0x</span>
                         {shortAddress.slice(2, shortAddress.length)}
                     </p>
