@@ -139,11 +139,11 @@ export function AddressWithActions({
                             </div>
                         }
                     >
-                        <div className="flex cursor-alias items-center">
+                        <div className="flex items-center">
                             <LinkWrapper
                                 href={`https://app.safe.global/balances?safe=${SUPPORTED_CHAINS[props.chain].gnosisPrefix}:${props.address}`}
                                 target="_blank"
-                                className="opacity-50 hover:opacity-100"
+                                className="cursor-alias opacity-50 hover:opacity-100"
                             >
                                 <IconWrapper icon={IconIds.IC_BASELINE_OPEN_IN_NEW} className="size-4" />
                             </LinkWrapper>
