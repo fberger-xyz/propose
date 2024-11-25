@@ -5,7 +5,8 @@ export default async function Page({ params }: { params: Promise<{ address: stri
 
     return (
         <PageWrapper className="mb-10 gap-5">
-            <div>address: {address}</div>
+            <div>PAGE TO BE CODED</div>
+            <div>safe address: {address}</div>
         </PageWrapper>
     )
 }

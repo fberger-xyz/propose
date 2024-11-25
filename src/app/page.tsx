@@ -160,11 +160,11 @@ export default function Page() {
                             <div className="grow border-b border-dashed border-very-light-hover" />
                         </div>
                         {[
-                            { value: 'Where tf are my funds ?', answers: ['Recall this page is just a simple frontend wrapper over pseudonym data'] },
-                            { value: 'Are my funds secured ?', answers: [] },
-                            { value: 'Am I being rightfully advised ?', answers: [] },
-                            { value: 'How can I withdraw my funds if need be ?', answers: [] },
-                            { value: 'Where is support', answers: [] },
+                            { value: 'Where tf are my funds?', answers: ['Recall this page is just a simple frontend wrapper over pseudonym data'] },
+                            { value: 'Are my funds secured?', answers: [] },
+                            { value: 'Am I being rightfully advised?', answers: [] },
+                            { value: 'How can I withdraw my funds?', answers: [] },
+                            { value: 'I need to talk to the support', answers: [] },
                         ].map((question) => (
                             <button className="flex flex-col rounded-sm border border-very-light-hover px-2 py-1 text-inactive hover:text-default">
                                 <p>{question.value}</p>
@@ -173,7 +173,9 @@ export default function Page() {
                     </section>
                 </div>
             ) : (
-                <p>Click on Connect</p>
+                <div className="flex w-full items-center justify-center gap-2">
+                    <p>Connect your wallet ⬆️</p>
+                </div>
             )}
         </PageWrapper>
     )
