@@ -61,7 +61,7 @@ export default function RootLayout({
                                     <div className="h-full overflow-scroll">{children}</div>
                                 </Suspense>
                                 <Footer />
-                                <Toaster position="bottom-center" reverseOrder={false} />
+                                <Toaster position="bottom-center" reverseOrder={true} />
                             </main>
                         </NextAuthProvider>
                     </WagmiAndReactQueryProviders>

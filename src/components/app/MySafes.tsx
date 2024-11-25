@@ -90,10 +90,11 @@ export default function MySafes() {
                                     )}
                                     <div className="flex flex-col gap-1.5 border-b border-light-hover px-3 py-2">
                                         <p className="text-xs text-inactive">Net worth</p>
-                                        {safe.balances.filter((asset) => asset.token?.name).length ? (
+                                        {safe.balances.filter((asset) => !!asset.token?.name).length ? (
                                             safe.balances.filter((asset) => asset.token?.name).map((asset) => <p key={asset.token?.name}></p>)
                                         ) : (
                                             <p className="text-xs">0 K$</p>
+                                            // <p className="text-xs">{JSON.stringify(safe.balances)}</p>
                                         )}
                                     </div>
                                     <div className="flex flex-col gap-1.5 border-b border-light-hover px-3 py-2">
