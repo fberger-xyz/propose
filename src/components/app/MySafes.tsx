@@ -39,7 +39,7 @@ export default function MySafes() {
                                         <div className="flex flex-col gap-1.5 border-b border-light-hover px-3 py-2">
                                             <div className="flex w-full justify-between">
                                                 <p className="text-xs text-inactive">
-                                                    {safe.generalDetails.threshold}/{safe.generalDetails.owners.length} signers
+                                                    Threshold {safe.generalDetails.threshold}/{safe.generalDetails.owners.length}
                                                 </p>
                                             </div>
                                             {safe.generalDetails.owners.length > 1 ? (
@@ -56,11 +56,9 @@ export default function MySafes() {
                                     {safe.generalDetails && safe.safeCreation && (
                                         <div className="flex flex-col gap-1.5 border-b border-light-hover px-3 py-2">
                                             <p className="text-xs text-inactive">Activity</p>
-                                            <p className="text-xs text-secondary">
-                                                Created on {dayjs(safe.safeCreation.created).format('ddd. DD MMM. YYYY')}
-                                            </p>
+                                            <p className="text-xs">Created on {dayjs(safe.safeCreation.created).format('ddd. DD MMM. YYYY')}</p>
                                             {safe.generalDetails.nonce ? (
-                                                <p className="text-xs text-secondary">
+                                                <p className="text-xs">
                                                     {safe.generalDetails.nonce} transaction{safe.generalDetails.nonce > 1 ? 's' : ''}
                                                 </p>
                                             ) : (

@@ -14,6 +14,7 @@ import IconWrapper from '../common/IconWrapper'
 import { signOut } from 'next-auth/react'
 import { Tooltip } from '@nextui-org/tooltip' // https://nextui.org/docs/components/tooltip
 import { blo } from 'blo'
+import { useSafesStore } from '@/stores/safes.store'
 
 export function ConnectOrDisconnect() {
     const account = useAccount()
@@ -23,6 +24,7 @@ export function ConnectOrDisconnect() {
     const { resolvedTheme } = useTheme()
     const rabbyKitRef = useRef<ReturnType<typeof createModal>>()
     const config = useConfig()
+    const { actions } = useSafesStore()
 
     useEffect(() => {
         if (!rabbyKitRef.current) {
@@ -54,7 +56,11 @@ export function ConnectOrDisconnect() {
             <IconWrapper icon={IconIds.LOADING} className="size-4 text-orange-400" />
         </button>
     ) : account.isConnected ? (
-        <div className="z-50 flex items-center gap-3 rounded-sm bg-light-hover px-2.5 py-1 hover:bg-light-hover">
+        <div
+            className="z-50 flex items-center gap-3 rounded-sm bg-light-hover px-2.5 py-1 hover:bg-light-hover"
+            onMouseEnter={() => actions.setIsHoveringLoggedWallet(true)}
+            onMouseLeave={() => actions.setIsHoveringLoggedWallet(false)}
+        >
             {/* <div className="size-2 rounded-full bg-green-500" /> */}
             <Image
                 alt={String(account.address)}

@@ -13,6 +13,7 @@ import { SUPPORTED_CHAINS } from '@/config/chains.config'
 import { useState } from 'react'
 import { useAccount } from 'wagmi'
 import { blo } from 'blo'
+import { useSafesStore } from '@/stores/safes.store'
 
 // todo better bg tooltips
 export function AddressWithActions({
@@ -28,6 +29,7 @@ export function AddressWithActions({
     isMultisig?: boolean
 }) {
     const account = useAccount()
+    const { isHoveringLoggedWallet } = useSafesStore()
     const shortAddress = shortenAddress(String(props.address))
     const [copied, setCopied] = useState(false)
     const [copyText, setCopyText] = useState('Copy wallet address')
@@ -35,7 +37,7 @@ export function AddressWithActions({
         <div
             className={cn(
                 'flex w-fit items-center gap-2.5 rounded-sm border border-transparent bg-very-light-hover px-2 py-1.5 text-base',
-                { 'border-primary': account.address && account.address === props.address },
+                { 'border-primary': isHoveringLoggedWallet && account.address && account.address === props.address },
                 { 'hover:border-light-hover': !account.address || account.address !== props.address },
             )}
         >
@@ -96,7 +98,7 @@ export function AddressWithActions({
                                 setCopyText('Copy wallet address')
                             }, 1000)
                         }}
-                        className="text-inactive hover:text-default"
+                        className="cursor-copy text-inactive hover:text-default"
                     >
                         {copied ? (
                             <IconWrapper icon={IconIds.CARBON_CHECKMARK} className="size-4 text-primary" />
