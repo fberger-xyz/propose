@@ -8,6 +8,8 @@ import LinkWrapper from '@/components/common/LinkWrapper'
 import dayjs from 'dayjs'
 import { SUPPORTED_CHAINS } from '@/config/chains.config'
 import { Tooltip } from '@nextui-org/tooltip'
+import { IconIds } from '@/enums'
+import IconWrapper from '../common/IconWrapper'
 
 export default function MySafes() {
     const { applicationData } = useSafesStore()
@@ -94,19 +96,21 @@ export default function MySafes() {
                                         {safe.proposerDetails?.delegate ? (
                                             <AddressWithActions address={safe.proposerDetails?.delegate ?? ''} />
                                         ) : (
-                                            <div className="flex w-fit items-center gap-2.5 rounded-sm border border-transparent bg-very-light-hover px-2 py-1.5 text-base">
-                                                <p className="text-primary">Add a proposer</p>
-                                            </div>
+                                            <button className="flex w-fit items-center gap-2.5 rounded-sm border border-dashed border-inactive px-1.5 py-1 text-base text-inactive hover:border-solid hover:border-primary hover:bg-very-light-hover hover:text-primary">
+                                                <p>Add a proposer</p>
+                                                <IconWrapper icon={IconIds.ADD_CIRCLED} className="size-4" />
+                                            </button>
                                         )}
                                     </div>
                                     <div className="flex size-full items-end justify-end px-3 py-2">
                                         <LinkWrapper
                                             href={`/safes/${safe.address}`}
                                             className={cn(
-                                                'bg-very-light-hover rounded-sm px-2 min-w-8 text-center sm:px-2.5 py-1 hover:bg-light-hover border border-transparent hover:border-primary hover:text-primary',
+                                                'bg-very-light-hover rounded-sm px-2 min-w-8 text-center sm:px-2.5 py-1 hover:bg-light-hover border border-transparent hover:border-primary hover:text-primary flex items-center gap-2',
                                             )}
                                         >
                                             <p className="text-sm">Manage</p>
+                                            <IconWrapper icon={IconIds.ARROW_RIGHT} className="size-4" />
                                         </LinkWrapper>
                                     </div>
                                 </div>

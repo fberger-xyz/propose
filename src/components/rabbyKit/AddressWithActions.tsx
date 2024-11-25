@@ -99,9 +99,9 @@ export function AddressWithActions({
                         className="cursor-copy text-inactive hover:text-default"
                     >
                         {copied ? (
-                            <IconWrapper icon={IconIds.CARBON_CHECKMARK} className="size-4 text-primary" />
+                            <IconWrapper icon={IconIds.CHECKMARK} className="size-4 text-primary" />
                         ) : (
-                            <IconWrapper icon={IconIds.CARBON_COPY} className="size-4" />
+                            <IconWrapper icon={IconIds.COPY} className="size-4" />
                         )}
                     </button>
                 </Tooltip>

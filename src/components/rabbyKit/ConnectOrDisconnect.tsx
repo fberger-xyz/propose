@@ -86,7 +86,7 @@ export function ConnectOrDisconnect() {
                         }}
                         className="hidden text-inactive hover:text-default sm:flex"
                     >
-                        <IconWrapper icon={IconIds.CARBON_COPY} className="size-4" />
+                        <IconWrapper icon={IconIds.COPY} className="size-4" />
                     </button>
                 </Tooltip>
                 {/* <Tooltip
