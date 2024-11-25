@@ -51,7 +51,6 @@ export function AddressWithActions({
             )}
             <Tooltip
                 showArrow
-                closeDelay={500}
                 content={<p className="rounded-md border border-light-hover bg-very-light-hover px-3 py-0.5 text-default">{props.address}</p>}
             >
                 <Image
@@ -80,7 +79,6 @@ export function AddressWithActions({
             <div className="flex items-center gap-2">
                 <Tooltip
                     showArrow
-                    closeDelay={1000}
                     content={
                         <p className="flex items-center gap-2 rounded-md border border-light-hover bg-very-light-hover px-3 py-0.5 text-default">
                             {copyText}
@@ -110,7 +108,6 @@ export function AddressWithActions({
                 {props.showDebank && (
                     <Tooltip
                         showArrow
-                        closeDelay={0}
                         content={
                             <div className="flex items-center gap-2 rounded-md border border-light-hover bg-very-light-hover px-3 py-0.5 text-default">
                                 <p>Watch in Debank</p>
