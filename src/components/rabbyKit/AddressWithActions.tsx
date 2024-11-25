@@ -33,6 +33,7 @@ export function AddressWithActions({
     const shortAddress = shortenAddress(String(props.address))
     const [copied, setCopied] = useState(false)
     const [copyText, setCopyText] = useState('Copy wallet address')
+    const { actions } = useSafesStore()
     return (
         <div
             className={cn(
@@ -40,6 +41,8 @@ export function AddressWithActions({
                 { 'border-primary': isHoveringLoggedWallet && account.address && account.address === props.address },
                 { 'hover:border-light-hover': !account.address || account.address !== props.address },
             )}
+            onMouseEnter={() => (account.address && account.address === props.address ? actions.setIsHoveringLoggedWallet(true) : null)}
+            onMouseLeave={() => (account.address && account.address === props.address ? actions.setIsHoveringLoggedWallet(false) : null)}
         >
             {props.chain && showChain && (
                 <Image

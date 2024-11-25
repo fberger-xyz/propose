@@ -7,7 +7,7 @@ import { createModal } from '@rabby-wallet/rabbykit'
 import { useTheme } from 'next-themes'
 import { AppThemes, IconIds } from '@/enums'
 import { useKeyboardShortcut } from '@/hooks/useKeyboardShortcutArgs'
-import { copyToClipboard, shortenAddress } from '@/utils'
+import { cn, copyToClipboard, shortenAddress } from '@/utils'
 import toast from 'react-hot-toast'
 import { toastStyle } from '@/config/toasts.config'
 import IconWrapper from '../common/IconWrapper'
@@ -24,7 +24,7 @@ export function ConnectOrDisconnect() {
     const { resolvedTheme } = useTheme()
     const rabbyKitRef = useRef<ReturnType<typeof createModal>>()
     const config = useConfig()
-    const { actions } = useSafesStore()
+    const { isHoveringLoggedWallet, actions } = useSafesStore()
 
     useEffect(() => {
         if (!rabbyKitRef.current) {
@@ -50,14 +50,17 @@ export function ConnectOrDisconnect() {
     })
 
     return account.isConnecting ? (
-        <button className="z-50 flex items-center gap-3 rounded-sm bg-very-light-hover px-2.5 py-1 hover:bg-light-hover">
+        <button className="z-50 flex items-center gap-3 rounded-sm border border-transparent bg-very-light-hover px-2.5 py-1 hover:bg-light-hover">
             <div className="size-2 rounded-full bg-orange-400" />
             <p className="text-inactive">Connecting</p>
             <IconWrapper icon={IconIds.LOADING} className="size-4 text-orange-400" />
         </button>
     ) : account.isConnected ? (
         <div
-            className="z-50 flex items-center gap-3 rounded-sm bg-light-hover px-2.5 py-1 hover:bg-light-hover"
+            className={cn(
+                'z-50 flex items-center gap-3 rounded-sm border border-transparent bg-light-hover px-2.5 py-1 hover:border-primary hover:bg-light-hover',
+                { 'border-primary': isHoveringLoggedWallet },
+            )}
             onMouseEnter={() => actions.setIsHoveringLoggedWallet(true)}
             onMouseLeave={() => actions.setIsHoveringLoggedWallet(false)}
         >
@@ -121,7 +124,7 @@ export function ConnectOrDisconnect() {
         </div>
     ) : (
         <button
-            className="z-50 flex items-center gap-3 rounded-sm bg-very-light-hover px-2.5 py-1 text-inactive hover:bg-light-hover hover:text-default"
+            className="z-50 flex items-center gap-3 rounded-sm border border-transparent bg-very-light-hover px-2.5 py-1 text-inactive hover:bg-light-hover hover:text-default"
             onClick={() => rabbyKitRef.current?.open()}
         >
             <div className="size-2 rounded-full bg-inactive" />

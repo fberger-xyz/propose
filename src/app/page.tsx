@@ -127,7 +127,7 @@ export default function Page() {
                     if (debug) console.log('applicationDataQuery', { applicationData })
 
                     // ui
-                    toast.success(`Loaded data`, { duration: 2000, style: toastStyle })
+                    toast.success(`Loaded data`, { style: toastStyle })
 
                     // store
                     actions.setApplicationData(applicationData)
